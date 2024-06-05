@@ -37,14 +37,14 @@ class Player:
         return all(cell != "?" for row in self.knownHand for cell in row)
     
     def columnTest(self, discard):
-        for col in range(4):
+        for col in range(3):
             first_card = self.knownHand[0][col]
             all_same = True
             for row in range(1, 3):
                 if(self.knownHand[row][col] != first_card):
                     all_same = False
                     break
-            if (all_same):
+            if (all_same and first_card != "?"):
                 for row in range(3):
                     discard.append(self.knownHand[row][col])
                     del self.knownHand[row][col]
@@ -52,9 +52,12 @@ class Player:
         return discard
     
     def calculateScore(self):
+        total = 0
         for row in self.knownHand:
             for element in row:
-                self.score += element
+                if(element != "?"):
+                    total += element
+        self.score = total
 
     def twoFirstCardsSelection(self):
         print(f"{self.name}, Choisissez deux cartes de votre choix dans votre jeu\n")
@@ -109,7 +112,7 @@ class Player:
                     flippedCard = self.cardSelection()
                 print(f"Vous retournez une carte, c'est un {flippedCard[0]}")
         print(f"Votre jeu : {self}")
-        discard = self.columnTest()
+        discard = self.columnTest(discard)
         if(self.revealCheck()):
             print(f"{self.name} a retourné sa dernière carte ! C'est le dernier tour pour les autres joueurs !")
             self.setHasFinished()

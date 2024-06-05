@@ -4,16 +4,16 @@ from Player import Player
 class Skyjo:
     # Se déroule en plusieurs manches et se termine dès qu'un joueur atteint 100 points ou plus. Celui qui a obtenu le moins de points gagne la partie.
     def __init__(self, playersList):
-        self.draw = np.array([])
         self.namesList = playersList
         self.playersList = []
-        self.discard = []
-        self.seenCards = []
-        self.playerTurn = None
+        self.isGameFinished = False
 
     def displayHands(self):
         for player in self.playersList:
             print(player)
+            
+    def setGameIsFinished(self):
+        self.isGameFinished = True
             
     def displayPlayerHand(self, player):
         print(player)
@@ -33,27 +33,14 @@ class Skyjo:
         self.displayHands()
             
     def jouerPartie(self):
-        print("Bienvenue dans le Skyjo !\nDistribution des cartes...\n")
-        self.displayHands()
-        while all(player.score < 100 for player in self.playersList):
-            biggestPlayerSum = ("x", -10) # Choix du premier à jouer
-            for player in self.playersList:
-                couple = player.twoFirstCardsSelection()
-                self.seenCards.append(couple[0])
-                self.seenCards.append(couple[1])
-                self.displayPlayerHand(player)
-                if(couple[0]+couple[1] > biggestPlayerSum[1]):
-                    biggestPlayerSum = (player, couple[0]+couple[1])
-            print("Voici les cartes choisies par tout le monde :\n")
-            self.displayHands()
-            self.playerTurn = biggestPlayerSum[0]
-            print(f"{self.playerTurn.name} a la plus grande somme de cartes et commence à jouer !\n")
-            self.playersList = self.reorderPlayers()
-            print(f"Ordre des joueurs : {self.playersList}")
+        print("Bienvenue dans le Skyjo !")
+        while (not self.isGameFinished):
             self.playRound()
             self.displayScores()
             for player in self.playersList:
                 player.resetHasFinished()
+                if(player.score >= 100):
+                    self.setGameIsFinished()
 
     def playRound(self):
         self.draw = np.random.permutation(list(np.fromiter([-2] * 5 + [0] * 15 + [nombre for nombre in range(-1, 13) for _ in range(10)], dtype=int)))
@@ -67,6 +54,21 @@ class Skyjo:
             self.playersList.append(newPlayer)  # Ajouter les objets Joueur à la liste
         self.seenCards = [self.discard[0]]
         self.playerTurn = self.playersList[0]
+        self.displayHands()
+        biggestPlayerSum = ("x", -10) # Choix du premier à jouer
+        for player in self.playersList:
+            couple = player.twoFirstCardsSelection()
+            self.seenCards.append(couple[0])
+            self.seenCards.append(couple[1])
+            self.displayPlayerHand(player)
+            if(couple[0]+couple[1] > biggestPlayerSum[1]):
+                biggestPlayerSum = (player, couple[0]+couple[1])
+        print("Voici les cartes choisies par tout le monde :\n")
+        self.displayHands()
+        self.playerTurn = biggestPlayerSum[0]
+        print(f"{self.playerTurn.name} a la plus grande somme de cartes et commence à jouer !\n")
+        self.playersList = self.reorderPlayers()
+        print(f"Ordre des joueurs : {self.playersList}")
         while(True):
             for player in self.playersList:
                 for notYou in self.playersList:
@@ -98,6 +100,6 @@ class Skyjo:
         for player in self.playersList:
             print(f"Score de {player.name} : {player.score}")
 
-players = ["Alice", "Bob"]
+players = ["Camille", "Thibaud"]
 game = Skyjo(players)
 game.jouerPartie()
