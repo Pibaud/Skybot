@@ -23,6 +23,7 @@ class Player:
         
     def revealAll(self):
         self.knownHand = self.realHand
+        self.calculateScore()
     
     def cardSelection(self):
         test = "wasKnown"
@@ -37,7 +38,7 @@ class Player:
         return all(cell != "?" for row in self.knownHand for cell in row)
     
     def columnTest(self, discard):
-        for col in range(3):
+        for col in range(0, len(self.knownHand[0])-1):
             first_card = self.knownHand[0][col]
             all_same = True
             for row in range(1, 3):
@@ -48,6 +49,7 @@ class Player:
                 for row in range(3):
                     discard.append(self.knownHand[row][col])
                     del self.knownHand[row][col]
+                    del self.realHand[row][col]
                 print(f"Vous avez une colonne complète de {first_card} ! Elle est enlevée de votre jeu")
         return discard
     
@@ -74,7 +76,7 @@ class Player:
         return (self.knownHand[lineFirst][columnFirst], self.knownHand[lineSecond][columnSecond])
     
     def play(self, draw, discard, seenCards):
-        print(f"Je sais que les cartes qui ont été jouées sont :\n{seenCards}\n")
+        print(f"Je sais que les cartes qui ont été jouées sont :\n{seenCards}\n\nVoulez vous prendre la carte de la pile (entrez '1') ou une carte de la pioche (entrez '2') ?\nVotre choix : \n")
         choice = int(input()) # Mettre l'IA ici
         while(choice != 1 and choice != 2):
                 choice = int(input("Erreur, veuillez choisir 1 ou 2 :\n"))
@@ -111,7 +113,6 @@ class Player:
                     print(f"La carte doit être inconnue\n")
                     flippedCard = self.cardSelection()
                 print(f"Vous retournez une carte, c'est un {flippedCard[0]}")
-        print(f"Votre jeu : {self}")
         discard = self.columnTest(discard)
         if(self.revealCheck()):
             print(f"{self.name} a retourné sa dernière carte ! C'est le dernier tour pour les autres joueurs !")

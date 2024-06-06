@@ -31,6 +31,12 @@ class Skyjo:
         for player in self.playersList:
             player.revealAll()
         self.displayHands()
+        
+    def displayOrder(self):
+        string = ""
+        for player in self.playersList:
+            string += player.name+" "
+        print(f"L'ordre est le suivant : {string}\n")
             
     def jouerPartie(self):
         print("Bienvenue dans le Skyjo !")
@@ -63,18 +69,16 @@ class Skyjo:
             self.displayPlayerHand(player)
             if(couple[0]+couple[1] > biggestPlayerSum[1]):
                 biggestPlayerSum = (player, couple[0]+couple[1])
-        print("Voici les cartes choisies par tout le monde :\n")
-        self.displayHands()
         self.playerTurn = biggestPlayerSum[0]
         print(f"{self.playerTurn.name} a la plus grande somme de cartes et commence à jouer !\n")
         self.playersList = self.reorderPlayers()
-        print(f"Ordre des joueurs : {self.playersList}")
+        self.displayOrder()
         while(True):
             for player in self.playersList:
                 for notYou in self.playersList:
                     if(notYou.name != player.name):
-                        print(f"Jeu de {notYou.name} :\n {notYou}")
-                print(f"Carte de la pile : {self.discard[-1]}\nVotre jeu : \n {player}\nVotre score : {player.score}\nVoulez vous prendre la carte de la pile (entrez '1') ou une carte de la pioche (entrez '2') ?\nVotre choix : ")
+                        print(f"{notYou}")
+                print(f"VOUS :\n {player}\nCarte de la pile : {self.discard[-1]}\nSCORE : {player.score}\n")
                 newGameState = player.play(self.draw, self.discard, self.seenCards)
                 self.draw = newGameState[0]
                 self.discard = newGameState[1]
@@ -87,7 +91,7 @@ class Skyjo:
                         for notYou in remainingPlayers:
                             if(notYou.name != remainingPlayer.name):
                                 print(f"Jeu de {notYou.name} :\n {notYou}")
-                        print(f"Carte de la pile : {self.discard[-1]}\nVotre jeu : \n {remainingPlayer}\nVotre score : {remainingPlayer.score}\nVoulez vous prendre la carte de la pile (entrez '1') ou une carte de la pioche (entrez '2') ?\nVotre choix : ")
+                        print(f"VOUS : \n {remainingPlayer}\nCarte de la pile : {self.discard[-1]}\nVotre score : {remainingPlayer.score}")
                         newGameState = remainingPlayer.play(self.draw, self.discard, self.seenCards)
                         self.draw = newGameState[0]
                         self.discard = newGameState[1]
@@ -100,6 +104,9 @@ class Skyjo:
         for player in self.playersList:
             print(f"Score de {player.name} : {player.score}")
 
-players = ["Camille", "Thibaud"]
+players = []
+nbPlayers = int(input("Entrez le nombre de joueurs :\n"))
+for i in range(nbPlayers):
+    players.append(input(f"Entrez le nom du joueur {i+1} :\n"))
 game = Skyjo(players)
 game.jouerPartie()
