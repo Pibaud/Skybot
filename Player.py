@@ -3,7 +3,8 @@ class Player:
         self.realHand = hand  # La main réelle est maintenant une liste de listes
         self.knownHand = [['?' for _ in range(4)] for _ in range(3)]  # Initialiser la main connue avec des "?"
         self.name = name
-        self.score = 0
+        self.totalScore = 0
+        self.roundScore = 0
         self.hasFinished = False
 
     def __str__(self):
@@ -21,9 +22,13 @@ class Player:
     def resetHasFinished(self):
         self.hasFinished = False
         
+    def resetRoundScore(self):
+        self.roundScore = 0
+        
     def revealAll(self):
         self.knownHand = self.realHand
         self.calculateScore()
+        self.totalScore += self.roundScore
     
     def cardSelection(self):
         test = "wasKnown"
@@ -46,6 +51,7 @@ class Player:
                     all_same = False
                     break
             if (all_same and first_card != "?"):
+                
                 for row in range(3):
                     discard.append(self.knownHand[row][col])
                     del self.knownHand[row][col]
@@ -59,7 +65,7 @@ class Player:
             for element in row:
                 if(element != "?"):
                     total += element
-        self.score = total
+        self.roundScore = total
 
     def twoFirstCardsSelection(self):
         print(f"{self.name}, Choisissez deux cartes de votre choix dans votre jeu\n")
