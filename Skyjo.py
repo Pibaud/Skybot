@@ -9,6 +9,8 @@ class Skyjo:
         self.namesList = playersList
         self.playersList = []
         self.isGameFinished = False
+        self.fstToFinish = None
+        self.winner = None
 
     def displayHands(self):
         for player in self.playersList:
@@ -41,14 +43,20 @@ class Skyjo:
         print(f"L'ordre est le suivant : {string}\n")
             
     def jouerPartie(self):
+        minTotalScore = -10000
         print("Bienvenue dans le Skyjo !")
         while (not self.isGameFinished):
             self.playRound()
-            self.displayScores()
             for player in self.playersList:
                 player.resetHasFinished()
-                if(player.score >= 100):
+                player.resetRoundScore()
+                if(player.totalScore >= 100):
                     self.setGameIsFinished()
+        for player in self.playersList:
+            if(player.totalScore < minTotalScore):
+                minTotalScore = player.totalScore
+                self.winner = player.name
+        print(f"{self.winner} a gagné !")
 
     def playRound(self):
         self.draw = np.random.permutation(list(np.fromiter([-2] * 5 + [0] * 15 + [nombre for nombre in range(-1, 13) for _ in range(10)], dtype=int)))
@@ -83,7 +91,7 @@ class Skyjo:
                 for notYou in self.playersList:
                     if(notYou.name != player.name):
                         print(f"{notYou}")
-                print(f"VOUS :\n {player}\nCarte de la pile : {self.discard[-1]}\nSCORE : {player.score}\n")
+                print(f"VOUS :\n {player}\nCarte de la pile : {self.discard[-1]}")
                 newGameState = player.play(self.draw, self.discard, self.seenCards)
                 self.draw = newGameState[0]
                 self.discard = newGameState[1]
@@ -96,18 +104,22 @@ class Skyjo:
                         for notYou in remainingPlayers:
                             if(notYou.name != remainingPlayer.name):
                                 print(f"Jeu de {notYou.name} :\n {notYou}")
-                        print(f"VOUS : \n {remainingPlayer}\nCarte de la pile : {self.discard[-1]}\nVotre score : {remainingPlayer.score}")
+                        print(f"VOUS : \n {remainingPlayer}\nCarte de la pile : {self.discard[-1]}")
                         newGameState = remainingPlayer.play(self.draw, self.discard, self.seenCards)
                         self.draw = newGameState[0]
                         self.discard = newGameState[1]
                         self.seenCards = newGameState[2]
                     print(f"C'est fini ! Tout le monde retourne ses cartes !")
                     self.displayAllRealHands()
+                    if all(player.roundScore >= remainingPlayer.roundScore for remainingPlayer in remainingPlayers):
+                        print(f"{player} a fini avant tout le monde mais n'a pas le plus petit score dans ce round\nIl prend le double de ses points. Nouveaux scores : ")
+                        player.totalScore += player.roundScore
+                        self.displayScores()
                     return 0
 
     def displayScores(self):
         for player in self.playersList:
-            print(f"Score de {player.name} : {player.score}")
+            print(f"Score de {player.name} : {player.totalScore}")
 
 players = []
 nbPlayers = int(input("Entrez le nombre de joueurs :\n"))

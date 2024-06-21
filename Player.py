@@ -5,7 +5,8 @@ class Player(ABC):
         self.realHand = hand  # La main réelle est maintenant une liste de listes
         self.knownHand = [['?' for _ in range(4)] for _ in range(3)]  # Initialiser la main connue avec des "?"
         self.name = name
-        self.score = 0
+        self.totalScore = 0
+        self.roundScore = 0
         self.hasFinished = False
 
     def __str__(self):
@@ -23,10 +24,14 @@ class Player(ABC):
     def resetHasFinished(self):
         self.hasFinished = False
         
+    def resetRoundScore(self):
+        self.roundScore = 0
+        
     def revealAll(self):
         self.knownHand = self.realHand
         self.calculateScore()
-        
+            self.totalScore += self.roundScore
+    
     @abstractmethod
     def cardSelection(self):
         pass
@@ -43,6 +48,7 @@ class Player(ABC):
                     all_same = False
                     break
             if (all_same and first_card != "?"):
+                
                 for row in range(3):
                     discard.append(self.knownHand[row][col])
                     del self.knownHand[row][col]
@@ -56,7 +62,7 @@ class Player(ABC):
             for element in row:
                 if(element != "?"):
                     total += element
-        self.score = total
+        self.roundScore = total
     
     @abstractmethod
     def actionChoice(self):
