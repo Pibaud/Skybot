@@ -1,5 +1,7 @@
 import numpy as np
 from Player import Player
+from HumanPlayer import HumanPlayer
+from BotPlayer import BotPlayer
 
 class Skyjo:
     # Se déroule en plusieurs manches et se termine dès qu'un joueur atteint 100 points ou plus. Celui qui a obtenu le moins de points gagne la partie.
@@ -56,7 +58,10 @@ class Skyjo:
             for _ in range(3):  # Distribuer 3 ensembles de 4 cartes par joueur
                 hand.append(self.draw[:4].tolist())  # Distribuer efficacement 4 cartes et retirer du paquet
                 self.draw = self.draw[4:]
-            newPlayer = Player(hand, name)
+            if name.startswith("Bot"):
+                newPlayer = BotPlayer(hand, name)
+            else:
+                newPlayer = HumanPlayer(hand, name)
             self.playersList.append(newPlayer)  # Ajouter les objets Joueur à la liste
         self.seenCards = [self.discard[0]]
         self.playerTurn = self.playersList[0]

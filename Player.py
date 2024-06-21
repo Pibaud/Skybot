@@ -1,4 +1,6 @@
-class Player:
+from abc import ABC, abstractmethod
+
+class Player(ABC):
     def __init__(self, hand, name):
         self.realHand = hand  # La main réelle est maintenant une liste de listes
         self.knownHand = [['?' for _ in range(4)] for _ in range(3)]  # Initialiser la main connue avec des "?"
@@ -24,15 +26,10 @@ class Player:
     def revealAll(self):
         self.knownHand = self.realHand
         self.calculateScore()
-    
+        
+    @abstractmethod
     def cardSelection(self):
-        test = "wasKnown"
-        line = int(input("Entrez la ligne de la carte\n"))-1
-        column = int(input("Entrez la colonne de la carte\n"))-1
-        if(self.knownHand[line][column] == "?"):
-            test = "wasUnknown"
-        self.knownHand[line][column] = self.realHand[line][column]
-        return (self.knownHand[line][column], (line, column), test)
+        pass
     
     def revealCheck(self):
         return all(cell != "?" for row in self.knownHand for cell in row)
@@ -60,27 +57,21 @@ class Player:
                 if(element != "?"):
                     total += element
         self.score = total
+    
+    @abstractmethod
+    def actionChoice(self):
+        pass
 
+    @abstractmethod
     def twoFirstCardsSelection(self):
-        print(f"{self.name}, Choisissez deux cartes de votre choix dans votre jeu\n")
-        lineFirst = int(input("Entrez la ligne de la première carte\n"))-1
-        columnFirst = int(input("Entrez la colonne de la première carte\n"))-1
-        self.knownHand[lineFirst][columnFirst] = self.realHand[lineFirst][columnFirst]
-        lineSecond = int(input("Entrez la ligne de la deuxième carte\n"))-1
-        columnSecond = int(input("Entrez la colonne de la deuxième carte\n"))-1
-        while(lineFirst == lineSecond and columnFirst == columnSecond):
-            print("Veuillez choisir une carte différente de la première\n")
-            lineSecond = int(input("Entrez la ligne de la deuxième carte\n"))-1
-            columnSecond = int(input("Entrez la colonne de la deuxième carte\n"))-1
-        self.knownHand[lineSecond][columnSecond] = self.realHand[lineSecond][columnSecond]
-        return (self.knownHand[lineFirst][columnFirst], self.knownHand[lineSecond][columnSecond])
+        pass
     
     def play(self, draw, discard, seenCards):
         print(f"Je sais que les cartes qui ont été jouées sont :\n{seenCards}\n\nVoulez vous prendre la carte de la pile (entrez '1') ou une carte de la pioche (entrez '2') ?\nVotre choix : \n")
-        choice = int(input()) # Mettre l'IA ici
-        while(choice != 1 and choice != 2):
-                choice = int(input("Erreur, veuillez choisir 1 ou 2 :\n"))
-        if(choice == 1):
+        firstChoice = self.actionChoice() # Mettre l'IA ici
+        while(firstChoice != 1 and firstChoice != 2):
+                firstChoice = int(input("Erreur, veuillez choisir 1 ou 2 :\n"))
+        if(firstChoice == 1):
             print(f"Vous prenez la carte {discard[-1]} de la pile\nAvec quelle carte de votre main voulez-vous l'échanger ?\n")
             cardAndCoord = self.cardSelection()
             print(f"Vous échangez un {cardAndCoord[0]} contre un {discard[len(discard)-1]}")
@@ -93,10 +84,10 @@ class Player:
         else:
             print(f"Vous piochez\nLa carte obtenue est un {draw[0]}\nVoulez-vous l'échanger avec une de vos cartes (entrez '1') ou la poser sur la défausse et retourner une de vos cartes cachées (entrez '2') ?\n")
             seenCards.append(draw[0])
-            choiceTwo = int(input())
-            while(choiceTwo != 1 and choice != 2):
-                choiceTwo = int(input("Erreur, veuillez choisir 1 ou 2 :\n"))
-            if(choiceTwo == 1):
+            secondChoice = self.actionChoice()
+            while(secondChoice != 1 and secondChoice != 2):
+                secondChoice = int(input("Erreur, veuillez choisir 1 ou 2 :\n"))
+            if(secondChoice == 1):
                 cardAndCoord = self.cardSelection()
                 print(f"Vous échangez un {cardAndCoord[0]} contre un {draw[0]}")
                 self.knownHand[cardAndCoord[1][0]][cardAndCoord[1][1]] = draw[0]
