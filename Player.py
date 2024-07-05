@@ -30,7 +30,7 @@ class Player(ABC):
     def revealAll(self):
         self.knownHand = self.realHand
         self.calculateScore()
-            self.totalScore += self.roundScore
+        self.totalScore += self.roundScore
     
     @abstractmethod
     def cardSelection(self):
