@@ -20,12 +20,11 @@ class BotPlayer(Player):
 
     def twoFirstCardsSelection(self):
         # IA basique pour la sélection des deux premières cartes
-        choices = []
-        for _ in range(2):
-            line = random.randint(0, len(self.knownHand) - 1)
-            column = random.randint(0, len(self.knownHand[0]) - 1)
-            while (line, column) in choices:
-                line = random.randint(0, len(self.knownHand) - 1)
-                column = random.randint(0, len(self.knownHand[0]) - 1)
-            self.knownHand[line][column] = self.realHand[line][column]
-            choices.append
+        print(f"{self.name}, Choisissez deux cartes de votre choix dans votre jeu\n")
+        lineFirst = random.randint(0, len(self.knownHand) - 1)
+        columnFirst = random.randint(0, len(self.knownHand[0]) - 1)
+        self.knownHand[lineFirst][columnFirst] = self.realHand[lineFirst][columnFirst]
+        lineSecond = random.randint(0, len(self.knownHand) - 1)
+        columnSecond = random.randint(0, len(self.knownHand[0]) - 1)
+        self.knownHand[lineSecond][columnSecond] = self.realHand[lineSecond][columnSecond]
+        return (self.knownHand[lineFirst][columnFirst], self.knownHand[lineSecond][columnSecond])

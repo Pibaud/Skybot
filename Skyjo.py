@@ -43,7 +43,7 @@ class Skyjo:
         print(f"L'ordre est le suivant : {string}\n")
             
     def jouerPartie(self):
-        minTotalScore = -10000
+        minTotalScore = 10000
         print("Bienvenue dans le Skyjo !")
         while (not self.isGameFinished):
             self.playRound()
